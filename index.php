@@ -5,11 +5,22 @@
         <title>Database Project</title>
     </head>
     <body>
-		<h1>Database Project</h1>
+	<div align="center">
+	<?php 
+		error_reporting(0);
 		
-		<?php 
+		if(isset($_POST['query'])) {
+			echo '<h1>Result</h1>';
 			include('./func.php'); 
-			page();
-		?>
+			page($_POST['query']);
+		}
+		else {
+			echo '<h1>Interface</h1><form action="index.php" method="POST">
+			<label>SQL query</label> : <input type="text" name="query" />
+			<input type="submit" value="Send" />
+			</form>';
+		}
+	?>
+	</div>
     </body>
 </html>

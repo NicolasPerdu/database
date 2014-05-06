@@ -11,25 +11,27 @@ function connexion() {
 	if (!$conn) {
 		$e = oci_error();
 		echo $e['message'];
-		//itrigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
 	}
 	
 	return $conn;
 }
 
-function page() {
-	echo '<p>Content of the database</p>';
-	
+function page($query) {
+
 	$conn = connexion();
 	
 	if(!$conn)
 		return;
-
-
-	$req = 'SELECT * FROM employees';
 	
-	$stid = oci_parse($conn, $req);
-	oci_execute($stid);
+	$stid = oci_parse($conn, $query);
+	
+	$r = oci_execute($stid);
+	
+	if(!$r) {
+		echo '<p>Error: SQL query invalid.<br/>
+		<a href="index.php">Try another query</a></p>';
+		exit;
+	}
 
 	echo "<table>\n";
 	
