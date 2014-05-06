@@ -1,10 +1,20 @@
 <?php
 
 function connexion() {
-	$username = '';
-	$password = '';
-	$host = 'localhost/XE';
-	return oci_connect($username, $password, $host);
+	$username = 'db2014_g29';
+	$password = 'db2014_g29';
+	$host = 'icoracle.epfl.ch';
+	$str = '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST='.$host.')(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME = MYDB)))';
+	
+	$conn = oci_connect($username, $password, $str);
+	
+	if (!$conn) {
+		$e = oci_error();
+		echo $e['message'];
+		//itrigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+	}
+	
+	return $conn;
 }
 
 function page() {
@@ -12,11 +22,10 @@ function page() {
 	
 	$conn = connexion();
 	
-	if (!$conn) {
-		$e = oci_error();
-		trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-	}
-	
+	if(!$conn)
+		return;
+
+
 	$req = 'SELECT * FROM employees';
 	
 	$stid = oci_parse($conn, $req);
