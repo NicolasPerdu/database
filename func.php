@@ -4,7 +4,7 @@ function connexion() {
 	$username = 'db2014_g29';
 	$password = 'db2014_g29';
 	$host = 'icoracle.epfl.ch';
-	$str = '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST='.$host.')(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME = MYDB)))';
+	$str = '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST='.$host.')(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME = srso4.epfl.ch)))';
 	
 	$conn = oci_connect($username, $password, $str);
 	
