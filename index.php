@@ -7,7 +7,7 @@
     <body>
 	<div align="center">
 	<?php 
-		error_reporting(0);
+		//error_reporting(0);
 		
 		if(isset($_POST['query'])) {
 			echo '<h1>Result</h1>';

@@ -16,6 +16,20 @@ function connexion() {
 	return $conn;
 }
 
+function get_database($query) {
+	$words = explode(" ", $query);
+	$b = false;
+	
+	foreach($words as $value) {
+		if($b) {
+			return strtolower($value);
+		}
+		if($value == "from") {
+			$b = true;
+		}
+	}
+}
+
 function page($query) {
 
 	$conn = connexion();
@@ -32,15 +46,14 @@ function page($query) {
 		<a href="index.php">Try another query</a></p>';
 		exit;
 	}
-
+	$db_query = get_database($query);
 	echo "<table>\n";
 	
 	while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
-		//print_r($row);
 		echo "<tr>\n";
 		foreach ($row as $key => $value)	{
 			$val = ($value !== null ? htmlentities($value, ENT_QUOTES) : "&nbsp;");
-			if($key == "RELEASEID") {
+			if($key == "RELEASEID" && $db_query == "release") {
 				echo '    <td>
 				<form action="index.php" method="post">
 				<input type="hidden" name="query" value="select * from track where releaseid = '.$val.'">
