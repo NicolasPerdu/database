@@ -44,8 +44,8 @@ function page($query) {
 				echo '    <td>
 				<form action="index.php" method="post">
 				<input type="hidden" name="query" value="select * from track where releaseid = '.$val.'">
-				<input type="submit" value="+" />
-				</form></td><td>'.$val.' </td>';
+				<input type="submit" value="'.$val.'" />
+				</form></td>';
 			} else {
 				echo "    <td>" . $val . "</td>\n";
 			}
