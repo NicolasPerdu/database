@@ -49,14 +49,33 @@ function page($query) {
 	$db_query = get_database($query);
 	echo "<table>\n";
 	
+	$head = false;
+	
 	while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
 		echo "<tr>\n";
+		if(!$head) {
+			echo "<tr>\n";
+			$keys = array_keys($row);
+			foreach ($keys as $v) {
+				echo'<td><strong>'.$v.'</strong></td>';
+			}
+			echo "</tr>\n";
+			$head = true;
+		}
+		
 		foreach ($row as $key => $value)	{
 			$val = ($value !== null ? htmlentities($value, ENT_QUOTES) : "&nbsp;");
-			if($key == "RELEASEID" && $db_query == "release") {
+			if($key == "MEDIUMID" && $db_query == "medium") {
 				echo '    <td>
 				<form action="index.php" method="post">
-				<input type="hidden" name="query" value="select * from track where releaseid = '.$val.'">
+				<input type="hidden" name="query" value="select * from track where mediumid = '.$val.'">
+				<input type="submit" value="'.$val.'" />
+				</form></td>';
+			}
+			else if($key == "RELEASEID" && $db_query == "release") {
+				echo '    <td>
+				<form action="index.php" method="post">
+				<input type="hidden" name="query" value="select * from medium where releaseId = '.$val.'">
 				<input type="submit" value="'.$val.'" />
 				</form></td>';
 			} else {
