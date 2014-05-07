@@ -149,15 +149,20 @@ CREATE TABLE Release (
 )
 \end{lstlisting}
 \section{Interface}
-The php extension php_oci8 should be enabled.
+The php extension \textit{php_oci8} should be enabled.\\
+\\
+The interface is done in PHP in two files :\\
+index.php - display the result when a query is send with the form.\\
+func.php - contain the main function: \textit{page($query)}, compute the result of the query and return an array.\\
+\\
+The function \textit{page($query)} is simple, we use oci_connect to obtain a connexion.\\
+We use \textit{oci_parse} to parse the query given as parameter, and then we execute \\
+the query with \textit{oci_execute} and get the result with \textit{oci_fetch_array} \\
+\\
+If the query is performed on the table Medium, instead of displaying the mediumID, \\
+we create a form with a hidden button, so that the user can know more about track with this id, \\
+the query perform is \textit{SELECT * FROM Track WHERE mediumId = id}\\
+\\
+The same thing is done with a query on Release, we display \textit{SELECT * FROM Medium WHERE releaseId = id}\\
 
-The interface is done in PHP in two files :
-index.php - display the result when a query is send with the form.
-func.php - contain the main function: \textit{page($query)}, compute the result of the query and return an array.
-
-The function \textit{page($query)} is simple, we use oci_connect to obtain a connexion.
-We use \textit{oci_parse} to parse the query given as parameter, 
-and then we execute the query with \textit{oci_execute} and get the result with \textit{oci_fetch_array}
-If the query is performed on the table release, instead of displaying the releaseID, we create a form with a hidden button, 
-so that the user can know more about track with this id, the query perform is \textit{SELECT * FROM Track WHERE ReleaseID = id}
 \end{document}
