@@ -36,9 +36,19 @@ function page($query) {
 	echo "<table>\n";
 	
 	while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
+		//print_r($row);
 		echo "<tr>\n";
-		foreach ($row as $item) {
-			echo "    <td>" . ($item !== null ? htmlentities($item, ENT_QUOTES) : "&nbsp;") . "</td>\n";
+		foreach ($row as $key => $value)	{
+			$val = ($value !== null ? htmlentities($value, ENT_QUOTES) : "&nbsp;");
+			if($key == "RELEASEID") {
+				echo '    <td>
+				<form action="index.php" method="post">
+				<input type="hidden" name="query" value="select * from track where releaseid = '.$val.'">
+				<input type="submit" value="+" />
+				</form></td><td>'.$val.' </td>';
+			} else {
+				echo "    <td>" . $val . "</td>\n";
+			}
 		}
 		echo "</tr>\n";
 	}
