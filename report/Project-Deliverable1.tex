@@ -1,0 +1,163 @@
+\documentclass[a4paper,10pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage[usenames,dvipsnames]{color}
+
+\title{Deliverable 1}
+\author{Chervine Majeri, Nicolas Perdu, Yannick Schaeffer}
+\date{20.03.2014}
+
+\pdfinfo{%
+  /Title    (Deliverable 1)
+  /Author   (Chervine Majeri, Nicolas Perdu, Yannick Schaeffer)
+  /Creator  ()
+  /Producer ()
+  /Subject  (Database Systems)
+  /Keywords ()
+}
+
+\lstset{
+basicstyle=\normalsize,
+keywordstyle=\ttfamily\color{OliveGreen},
+identifierstyle=\ttfamily\color{CadetBlue}\bfseries,
+commentstyle=\color{Brown},
+stringstyle=\ttfamily,
+showstringspaces=true
+}
+
+\begin{document}
+\maketitle
+\section{Entity-Relationship Diagram}
+Let's put words on the data, discussing what could be entities, or relationships (not attributes).\\
+\begin{itemize}
+\item An artist comes from an area.
+\item An artist plays in a set of genres.
+\item An artist can write tracks.
+\item Tracks are recordings, present on the physical/digital port of a release, at some position.
+\end{itemize}
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=90mm]{ERD.jpeg}
+\caption{Entity-Relationship Diagram}
+\label{overflow}
+\end{figure}
+\newpage
+The only decision that needs explaining is the fact that Track is a relation, and not an entity.\\
+Here, an analogy with the real world is necessary. A track is usually considered to be a recording. 
+Its physical support doesn't affect the property of the object : it is a piece of music.\\
+The same way, a port of an album is just that, a port. We have different ports of the same object (the release) on different formats (the medium).\\
+So a recording is the x-th track on some port of a release. Hence the aggregations.\\
+Note that not all recordings have made it to be released.\\
+\section{Key/Participation Constraints}
+An artist can only come from one area, however, an area can have spawned many artists.\\
+There is a Many-to-one key constraint between Artist and Area.\\
+An artist is considered an artist only after he has started producing music. This music will have a genre (even if it is a brand new one).\\
+There is a total participation constraint on Artists and the "Plays in" relation.\\
+What has been written is always a track, and a track has always been written : total participation constraint between Track and Wrote.\\
+A port always has a track (this is a supposition), and a track always belongs to a port : total participation constraint between Track and Port.\\
+
+An artist can still be an artist even though he hasn't released any tracks, so there can't be a constraint there.\\
+\section{Tables creation}
+\lstset{language=SQL}
+\begin{lstlisting}[frame=single, float=h]
+CREATE TABLE Area (
+  areaID	NUMBER (12),
+  name		VARCHAR2 (80),
+  type		CHAR (12),
+  PRIMARY KEY (areaID)
+)
+\end{lstlisting}
+\begin{lstlisting}[frame=single, float=h]
+CREATE TABLE Artist (
+  artistID	NUMBER (12),
+  name		VARCHAR2 (80),
+  type		CHAR (6),
+  gender	CHAR (6),
+  areaID	NUMBER (12),
+  PRIMARY KEY (artistID),
+  FOREIGN KEY (areaID)
+    REFERENCES Area(areaID)
+    ON DELETE SET NULL
+)
+\end{lstlisting}
+\begin{lstlisting}[frame=single, float=h]
+CREATE TABLE Plays_in (
+  artistID	NUMBER (12),
+  genreID	NUMBER (12),
+  PRIMARY KEY (artistID, genreID),
+  FOREIGN KEY (artistID)
+    REFERENCES Artist(artistID)
+    ON DELETE CASCADE,
+  FOREIGN KEY (genreID)
+    REFERENCES Genre(genreID)
+    ON DELETE CASCADE
+)
+\end{lstlisting}
+\begin{lstlisting}[frame=single, float=h]
+CREATE TABLE Genre (
+  genreID	NUMBER (12),
+  name		VARCHAR2 (80),
+  count		NUMBER (8),
+  PRIMARY KEY (genreID)
+)
+\end{lstlisting}
+\begin{lstlisting}[frame=single, float=h]
+CREATE TABLE Wrote (
+  artistID	NUMBER (12),
+  trackID	NUMBER (12),
+  PRIMARY KEY (artistID, trackID),
+  FOREIGN KEY (artistID)
+    REFERENCES Artist(artistID)
+    ON DELETE CASCADE,
+  FOREIGN KEY (trackID)
+    REFERENCES Track(trackID)
+    ON DELETE CASCADE
+)
+\end{lstlisting}
+\begin{lstlisting}[frame=single, float=h]
+CREATE TABLE Recording (
+  recordingID	NUMBER (12),
+  name		VARCHAR2 (80),
+  length	NUMBER (12),
+  PRIMARY KEY (recordingID)
+)
+\end{lstlisting}
+\begin{lstlisting}[frame=single, float=h]
+CREATE TABLE Track (
+  trackID	NUMBER (12),
+  recordingID	NUMBER (12),
+  releaseID	NUMBER (12),
+  format	CHAR (20),
+  position	NUMBER (4),
+  PRIMARY KEY (trackID),
+  UNIQUE (recordingID, releaseID, format),
+  FOREIGN KEY (recordingID),
+    REFERENCES Recording(recordingID)
+    ON DELETE CASCADE,
+  FOREIGN KEY (releaseID)
+    REFERENCES Release(releaseID)
+    ON DELETE CASCADE,
+)
+\end{lstlisting}
+\begin{lstlisting}[frame=single, float=h]
+CREATE TABLE Release (
+  releaseID	NUMBER (12),
+  name		VARCHAR2 (80),
+  PRIMARY KEY (releaseID)
+)
+\end{lstlisting}
+\section{Interface}
+The php extension php_oci8 should be enabled.
+
+The interface is done in PHP in two files :
+index.php - display the result when a query is send with the form.
+func.php - contain the main function: \textit{page($query)}, compute the result of the query and return an array.
+
+The function \textit{page($query)} is simple, we use oci_connect to obtain a connexion.
+We use \textit{oci_parse} to parse the query given as parameter, 
+and then we execute the query with \textit{oci_execute} and get the result with \textit{oci_fetch_array}
+If the query is performed on the table release, instead of displaying the releaseID, we create a form with a hidden button, 
+so that the user can know more about track with this id, the query perform is \textit{SELECT * FROM Track WHERE ReleaseID = id}
+\end{document}
